@@ -1,19 +1,35 @@
 class Solution(object):
-    def rotate(self, matrix):
+    def findJudge(self, n, trust):
         """
-        :type matrix: List[List[int]]
-        :rtype: None Do not return anything, modify matrix in-place instead.
+        :type n: int
+        :type trust: List[List[int]]
+        :rtype: int
         """
-        # Transpose Matrix
-        for y in range(len(matrix)):
-            for x in range(len(matrix[0])):
-                if y < x:
-                    # Swap each element above main diagonal with respective element below
-                    matrix[y][x], matrix[x][y] = matrix[x][y], matrix[y][x]
+        adjecency_matrix = [[False for _ in range(n)] for _ in range(n)]
 
-        # Reverse Rows
-        for i in range(len(matrix)):
-            matrix[i] = matrix[i][::-1]
+        # Put into adjecency matrix
+        for edge in trust:
+            adjecency_matrix[edge[0]-1][edge[1]-1] = True
+        
+        candidates = []
 
+        # Add people who don't trust anyone
+        for i in range(n):
+            if True not in adjecency_matrix[i]:
+                candidates.append(i)
+        
+        # Remove any candidates not trusted by all
+        for candidate in candidates[:]:
+            for i in range(n):
+                if i != candidate and adjecency_matrix[i][candidate] == False:
+                    candidates.remove(candidate)
+                    break
 
-print('test')
+        if candidates:
+            return candidates[0] + 1
+        else:
+            return -1
+
+n = 4
+trust = [[1,3],[1,4],[2,3]]
+print(Solution().findJudge(n, trust))
