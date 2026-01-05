@@ -1,31 +1,52 @@
 class Solution(object):
-    def findJudge(self, n, trust):
+    def generateMatrix(self, n):
         """
         :type n: int
-        :type trust: List[List[int]]
-        :rtype: int
+        :rtype: List[List[int]]
         """
-        adjecency_matrix = [[False for _ in range(n)] for _ in range(n)]
+        min_x, max_x = 0, n
+        min_y, max_y = 0, n
 
-        # Put into adjecency matrix
-        for edge in trust:
-            adjecency_matrix[edge[0]-1][edge[1]-1] = True
-        
-        candidates = []
+        # create blank n x n matrix
+        matrix = [[0 for _ in range(n)] for _ in range(n)]
 
-        # Add people who don't trust anyone
-        for i in range(n):
-            if True not in adjecency_matrix[i]:
-                candidates.append(i)
-        
-        # Remove any candidates not trusted by all
-        for candidate in candidates[:]:
-            for i in range(n):
-                if i != candidate and adjecency_matrix[i][candidate] == False:
-                    candidates.remove(candidate)
-                    break
+        x, y = 0, 0
+        mode = 0
+        # mode 0: right
+        # mode 1: down
+        # mode 2: left
+        # mode 3: up
 
-        if candidates:
-            return candidates[0] + 1
-        else:
-            return -1
+        i = 1
+        while min_x < max_x and min_y < max_y:
+            matrix[y][x] = i
+            if mode == 0:
+                if x + 1 == max_x:
+                    mode = 1
+                    y += 1
+                    min_y += 1
+                else:
+                    x += 1
+            elif mode == 1:
+                if y + 1 == max_y:
+                    mode = 2
+                    x -= 1
+                    max_x -= 1
+                else:
+                    y += 1
+            elif mode == 2:
+                if x == min_x:
+                    mode = 3
+                    y -= 1
+                    max_y -= 1
+                else:
+                    x -= 1
+            else: # mode == 3
+                if y == min_y:
+                    mode = 0
+                    x += 1
+                    min_x += 1
+                else:
+                    y -= 1
+            i += 1
+        return matrix
