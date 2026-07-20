@@ -1,25 +1,31 @@
+from collections import Counter
 class Solution(object):
-    def findCircleNum(self, isConnected):
+    def longestSubstring(self, s, k):
         """
-        :type isConnected: List[List[int]]
+        :type s: str
+        :type k: int
         :rtype: int
         """
         
-        num_provinces = 0
-        explored = set()
+        def recursive_split(str):
+            print(str)
+            if len(str) < k:
+                return 0
+            counts = Counter(str)
+            imperfect = False
+            for val in counts.values():
+                if val < k:
+                    imperfect = True
+            if not imperfect:
+                return len(str)
+            prev_i = -1
+            max_sub_length = 0
+            for i in range(len(str)):
+                if counts[str[i]] < k:
+                    max_sub_length = max(max_sub_length, recursive_split(str[prev_i+1:i]))
+                    prev_i = i
+            return max(max_sub_length, recursive_split(str[prev_i+1:i+i]))
 
-        def dfs(node):
-            explored.add(node)
-            for other_node in range(len(isConnected[node])):
-                if isConnected[node][other_node] != 0 and other_node not in explored:
-                    dfs(other_node)
-
-        for node in range(len(isConnected)):
-            if node not in explored:
-                dfs(node)
-                num_provinces += 1
+        return recursive_split(s)
         
-        return num_provinces
-    
-matrix = [[1,0,0],[0,1,0],[0,0,1]]
-print(Solution().findCircleNum(matrix))
+print(Solution().longestSubstring("bbaaacbd", 3))
